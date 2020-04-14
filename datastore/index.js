@@ -28,7 +28,7 @@ exports.readAll = (callback) => {
 
   fs.readdir(exports.dataDir, 'utf8', (err, files) => {
     if(err) {
-      throw ('error reading directory')
+      throw ('error reading directory');
       // callback(null, 0);
     }
     var data = _.map(files, (file) => {
@@ -39,7 +39,7 @@ exports.readAll = (callback) => {
     });
     // console.log(data, 'this is data')
     callback(null, data);
-  })
+  });
 
 };
 
@@ -54,44 +54,30 @@ exports.readOne = (id, callback) => {
       return callback(err);
     }
     // console.log(id)
-    callback(null, {id: id , text: data})
+    callback(null, {id: id , text: data});
 
-  })
-    // console.log('this is id:', id)
-    // _.each(todos, todo => {
-    //   let fileID = todo.substring(0,todo.length-4);
-    //   // console.log()
-    //   console.log('this is file id:' ,fileID)
-    //   if ( fileID === id ) {
-    //     console.log('this is todo:' ,todos)
-    //     fs.readFile(path.join(exports.dataDir, todo), 'utf8', (err, data) => {
-    //       console.log('This is data:',data)
-    //       if (err) {
-    //         callback(err);
-    //       }
-    //       callback(null, { id: fileID, text : data })
-    //     })
-    //   }
-    // })
+  });
 
-
-
-  // var text = items[id];
-  // if (!text) {
-  //   callback(new Error(`No item with id: ${id}`));
-  // } else {
-  //   callback(null, { id, text });
-  // }
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+
+  fs.access(path.join(exports.dataDir, `${id}.txt`), (err) => {
+    if(err) {
+      callback(new Error(`File does not exist`));
+    } else {
+      fs.writeFile(path.join(exports.dataDir, `${id}.txt`), text, (err) => {
+        if (err) {
+          // console.log(err)
+          callback(new Error(`No item with id: ${id}`));
+          // throw (err);
+        }
+
+        callback(null, { id: id, text: text });
+
+      });
+    }
+  })
 };
 
 exports.delete = (id, callback) => {
