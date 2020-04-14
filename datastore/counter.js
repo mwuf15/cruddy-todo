@@ -19,6 +19,7 @@ const readCounter = (callback) => {
   fs.readFile(exports.counterFile, (err, fileData) => {
     // console.log(fileData)
     if (err) {
+      //console.log('error')
       callback(null, 0);
     } else {
       callback(null, Number(fileData));
@@ -50,7 +51,7 @@ exports.getNextUniqueId = (callback) => {
     } else {
       counter = fileData + 1;
       writeCounter(counter, (err, counterId) => {
-        callback(err, counterId)
+        callback(err, counterId);
       });
 
     }
