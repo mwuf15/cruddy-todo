@@ -27,15 +27,15 @@ exports.create = (text, callback) => {
 exports.readAll = (callback) => {
 
   fs.readdir(exports.dataDir, 'utf8', (err, files) => {
-    if(err) {
+    if (err) {
       throw ('error reading directory');
       // callback(null, 0);
     }
     var data = _.map(files, (file) => {
       // console.log(file.substring(0,file.length-4), 'this is fileeeee');
-      let fileID = file.substring(0,file.length-4);
+      let fileID = file.substring(0, file.length - 4);
       // console.log(fileID, 'this is fileID')
-      return { id:fileID, text: fileID };
+      return { id: fileID, text: fileID };
     });
     // console.log(data, 'this is data')
     callback(null, data);
@@ -54,7 +54,7 @@ exports.readOne = (id, callback) => {
       return callback(err);
     }
     // console.log(id)
-    callback(null, {id: id , text: data});
+    callback(null, {id: id, text: data});
 
   });
 
@@ -63,21 +63,17 @@ exports.readOne = (id, callback) => {
 exports.update = (id, text, callback) => {
 
   fs.access(path.join(exports.dataDir, `${id}.txt`), (err) => {
-    if(err) {
-      callback(new Error(`File does not exist`));
+    if (err) {
+      callback(new Error('File does not exist'));
     } else {
       fs.writeFile(path.join(exports.dataDir, `${id}.txt`), text, (err) => {
         if (err) {
-          // console.log(err)
           callback(new Error(`No item with id: ${id}`));
-          // throw (err);
         }
-
         callback(null, { id: id, text: text });
-
       });
     }
-  })
+  });
 };
 
 exports.delete = (id, callback) => {
