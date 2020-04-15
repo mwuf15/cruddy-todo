@@ -3,7 +3,11 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
-var items = {};
+
+const Promise = require('bluebird');
+const readFilePromise = Promise.promisify(fs.readFile);
+
+// var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -26,21 +30,23 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
 
-  fs.readdir(exports.dataDir, 'utf8', (err, files) => {
+  fs.readdir(exports.dataDir, (err, files) => {
     if (err) {
-      throw ('error reading directory');
-      // callback(null, 0);
+      throw ('error reading data folder');
     }
     var data = _.map(files, (file) => {
-      // console.log(file.substring(0,file.length-4), 'this is fileeeee');
-      let fileID = file.substring(0, file.length - 4);
-      // console.log(fileID, 'this is fileID')
-      return { id: fileID, text: fileID };
+      var id = path.basename(file, '.txt');
+      var filepath = path.join(exports.dataDir, file);
+      return readFilePromise(filepath).then(fileData => {
+        return {
+          id: id,
+          text: fileData.toString()
+        };
+      });
     });
-    // console.log(data, 'this is data')
-    callback(null, data);
+    Promise.all(data)
+      .then(items => callback(null, items), err => callback(err));
   });
-
 };
 
 //?first we will fs.readdir to get the id
