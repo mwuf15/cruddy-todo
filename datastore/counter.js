@@ -42,14 +42,15 @@ const writeCounter = (count, callback) => {
 exports.getNextUniqueId = (callback) => {
   // first we read the file by invoking readCounter
   readCounter((err, fileData) => {
-    callback(fileData);
     if (err) {
-      throw err;
+      callback(null, 0);
+      // throw err;
     } else {
-      counter++;
+      counter = fileData + 1;
       writeCounter(counter, (err, fileData) => {
         if (err) {
-          throw err;
+          callback(null, 0);
+          // throw err;
         } else {
           callback(err, fileData);
         }
