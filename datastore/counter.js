@@ -37,14 +37,34 @@ const writeCounter = (count, callback) => {
 };
 
 // Public API - Fix this function //////////////////////////////////////////////
-
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+// we should use our readCounter and writeCounter functions to rewrite this function in continuation passing style
+// we should pass in a callback and an err and data as parameters
+exports.getNextUniqueId = (callback) => {
+  // first we read the file by invoking readCounter
+  readCounter((err, fileData) => {
+    callback(fileData);
+    if (err) {
+      throw err;
+    } else {
+      counter++;
+      writeCounter(counter, (err, fileData) => {
+        if (err) {
+          throw err;
+        } else {
+          callback(err, fileData);
+        }
+      });
+    }
+  });
+  // then we invoke writeCounter() on the file
+  // counter = counter + 1;
+  // return zeroPaddedNumber(counter);
 };
 
 
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
-
+// the point of this page is to write the counter to the counter.txt file to store in local memory
+// our goal is to make a file in a database and save it there
 exports.counterFile = path.join(__dirname, 'counter.txt');
+
