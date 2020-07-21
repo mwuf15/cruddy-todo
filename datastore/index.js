@@ -36,7 +36,7 @@ exports.readAll = (callback) => {
       // map over the data files and create a new array without file extension
       // change id from filename to id
       var mappedData = _.map(data, (text, id) => {
-        //
+        // id = sprintf('%05d', id + 1);
         var text = text.replace('.txt', '');
         var id = path.basename(text, '.txt');
         return {id, text};
@@ -44,18 +44,29 @@ exports.readAll = (callback) => {
       callback(null, mappedData);
     }
   });
+  // old code
   // var data = _.map(items, (text, id) => {
   // return { id, text };
   // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // var text = items[id];
+  var filePath = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(filePath, 'utf8', (err, text) => {
+    if (err) {
+      callback(err, null);
+    } else {
+
+      callback(null, {id, text});
+    }
+  });
+  // old code
+  // if (!text) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.update = (id, text, callback) => {
