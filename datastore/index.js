@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const sprintf = require('sprintf-js').sprintf;
 
 var items = {};
 
@@ -27,10 +28,25 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  // invoke read directory, translate to utf8, data is an array of filenames in data directory
+  fs.readdir(exports.dataDir, 'utf8', (err, data) => {
+    if (err) {
+      callback(null, data);
+    } else {
+      // map over the data files and create a new array without file extension
+      // change id from filename to id
+      var mappedData = _.map(data, (text, id) => {
+        //
+        var text = text.replace('.txt', '');
+        var id = path.basename(text, '.txt');
+        return {id, text};
+      });
+      callback(null, mappedData);
+    }
   });
-  callback(null, data);
+  // var data = _.map(items, (text, id) => {
+  // return { id, text };
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
