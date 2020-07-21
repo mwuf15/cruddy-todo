@@ -57,7 +57,6 @@ exports.readOne = (id, callback) => {
     if (err) {
       callback(err, null);
     } else {
-
       callback(null, {id, text});
     }
   });
@@ -69,14 +68,29 @@ exports.readOne = (id, callback) => {
   // }
 };
 
-exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+exports.update = (id, newText, callback) => {
+  var filePath = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(filePath, (err, oldText) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      fs.writeFile(filePath, newText, (err) => {
+        if (err) {
+          callback(err, null);
+        } else {
+          callback(null, {id, newText});
+        }
+      });
+    }
+  });
+  // old code
+  // var item = items[id];
+  // if (!item) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   items[id] = text;
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.delete = (id, callback) => {
