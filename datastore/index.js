@@ -127,3 +127,12 @@ exports.initialize = () => {
     fs.mkdirSync(exports.dataDir);
   }
 };
+
+
+fs.readFile(filePath, 'utf8', (err, firstLineFromFile) => {
+  if (err) {
+    callback(err, null);
+  } else {
+    callback(null, firstLineFromFile.split('\n').shift());
+  }
+});
